@@ -132,9 +132,9 @@ func (rs *reqStmts) checkRule2() (issues []string) {
 	// a maximum of 1 isolated direct or indirect line.
 	for _, block := range rs.blocks {
 		if block.consistency == ONLY_DIRECT && len(rs.directLines) > 0 {
-			issues = append(issues, fmt.Sprintf("require directive %s %s should be inside block.", rs.directLines[0].name, rs.directLines[1].version))
+			issues = append(issues, fmt.Sprintf("require directive \"%s %s\" should be inside block.", rs.directLines[0].name, rs.directLines[0].version))
 		} else if block.consistency == ONLY_INDIRECT && len(rs.indirectLines) > 0 {
-			issues = append(issues, fmt.Sprintf("require directive \"%s %s\" should be inside block.", rs.indirectLines[0].name, rs.indirectLines[1].version))
+			issues = append(issues, fmt.Sprintf("require directive \"%s %s\" should be inside block.", rs.indirectLines[0].name, rs.indirectLines[0].version))
 		}
 	}
 
