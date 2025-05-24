@@ -90,6 +90,14 @@ func TestAnalyzeIsolatedLinesShouldBeInsideBlock(t *testing.T) {
 	assert.Equal(t, issues[1], "require directive \"github.com/cosa/cosita/v5 v5.3.3\" should be inside block.")
 }
 
+func TestAnalyzeTwoCorrectBlocks(t *testing.T) {
+	file := retrieveGoModFile("rule3", "twocorrectblocks")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 0)
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {
