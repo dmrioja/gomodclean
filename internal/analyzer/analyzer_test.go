@@ -71,6 +71,15 @@ func TestAnalyzeIsolatedDirectLineShouldBeInsideBlock(t *testing.T) {
 	assert.Equal(t, issues[0], "require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.")
 }
 
+func TestAnalyzeIsolatedIndirectLineShouldBeInsideBlock(t *testing.T) {
+	file := retrieveGoModFile("rule2", "isolatedindirectlineshouldbeinsideblock")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 1)
+	assert.Equal(t, issues[0], "require directive \"github.com/dmrioja/shodo v1.0.0\" should be inside block.")
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {
