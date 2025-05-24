@@ -18,9 +18,6 @@ type reqStmts struct {
 
 // reqLine represents a single require directive.
 type reqLine struct {
-
-	// TODO: name and version could be useless. I used them for the first iteration to print
-	// the dependency but I don't think I need them any more.
 	name     string
 	version  string
 	indirect bool
