@@ -98,6 +98,16 @@ func TestAnalyzeTwoCorrectBlocks(t *testing.T) {
 	assert.Len(t, issues, 0)
 }
 
+func TestAnalyzeUnorderedBlocks(t *testing.T) {
+	file := retrieveGoModFile("rule3", "unorderedblocks")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 2)
+	assert.Equal(t, issues[0], "first require block should only contain direct dependencies.")
+	assert.Equal(t, issues[1], "second require block should only contain indirect dependencies.")
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {
