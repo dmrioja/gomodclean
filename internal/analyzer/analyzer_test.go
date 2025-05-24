@@ -118,6 +118,14 @@ func TestAnalyzeMixedBlock(t *testing.T) {
 	assert.Equal(t, issues[1], "second require block should only contain indirect dependencies.")
 }
 
+func TestAnalyzeOnlyOneIndirectBlock(t *testing.T) {
+	file := retrieveGoModFile("rule3", "onlyoneindirectblock")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 0)
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {

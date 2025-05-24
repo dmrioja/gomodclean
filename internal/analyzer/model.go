@@ -144,17 +144,26 @@ func (rs *reqStmts) checkRule2() (issues []string) {
 // checkRule3 asserts the first require block only contains direct dependencies
 // while the second one only contains indirect ones.
 func (rs *reqStmts) checkRule3() (issues []string) {
+
+	// case we have 2 require blocks
 	// rule #3.1: check the first require block only contains direct dependencies.
-	if len(rs.blocks) > 0 {
+	// rule #3.2: check the second require block only contains indirect dependencies.
+	if len(rs.blocks) > 1 {
 		if rs.blocks[0].consistency != ONLY_DIRECT {
 			issues = append(issues, "first require block should only contain direct dependencies.")
 		}
-	}
-
-	// rule #3.2: check the second require block only contains indirect dependencies.
-	if len(rs.blocks) > 1 {
 		if rs.blocks[1].consistency != ONLY_INDIRECT {
 			issues = append(issues, "second require block should only contain indirect dependencies.")
+		}
+		if len(issues) > 0 {
+			return
+		}
+	}
+
+	// case we only have 1 require block
+	if len(rs.blocks) > 0 {
+		if rs.blocks[0].consistency == MIXED {
+			issues = append(issues, "first require block should not contain mixed dependencies.")
 		}
 	}
 
