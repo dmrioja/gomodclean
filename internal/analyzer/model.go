@@ -123,6 +123,21 @@ func (rs *reqStmts) checkRule2() (issues []string) {
 	if len(rs.blocks) > 2 {
 		issues = append(issues, fmt.Sprintf("there should be a maximum of 2 require blocks but found %d", len(rs.blocks)))
 	}
+
+	if len(issues) > 0 {
+		return
+	}
+
+	// at this point there should be a maximum of 2 require blocks and
+	// a maximum of 1 isolated direct or indirect line.
+	for _, block := range rs.blocks {
+		if block.consistency == ONLY_DIRECT && len(rs.directLines) > 0 {
+			issues = append(issues, fmt.Sprintf("require directive %s %s should be inside block.", rs.directLines[0].name, rs.directLines[1].version))
+		} else if block.consistency == ONLY_INDIRECT && len(rs.indirectLines) > 0 {
+			issues = append(issues, fmt.Sprintf("require directive \"%s %s\" should be inside block.", rs.indirectLines[0].name, rs.indirectLines[1].version))
+		}
+	}
+
 	return
 }
 
