@@ -35,6 +35,16 @@ func TestAnalyzeSeveralIndirectLines(t *testing.T) {
 	assert.Equal(t, issues[0], "indirect require lines should be grouped into blocks but found 2 isolated require directives.")
 }
 
+func TestAnalyzeBothDirectAndIndirectLines(t *testing.T) {
+	file := retrieveGoModFile("rule1", "bothdirectandindirectlines")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 2)
+	assert.Equal(t, issues[0], "direct require lines should be grouped into blocks but found 2 isolated require directives.")
+	assert.Equal(t, issues[1], "indirect require lines should be grouped into blocks but found 2 isolated require directives.")
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {
