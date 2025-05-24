@@ -90,25 +90,48 @@ func (rb *reqBlock) updateConsistency(indirect bool) {
 }
 
 // analyze checks go.mod file satisfies all the rules defined for gomodclean.
-func (rs *reqStmts) analyze() (issues []string) {
+func (rs *reqStmts) analyze() []string {
 
 	// rule #1: check require lines are grouped into blocks.
+	if issues := rs.checkRule1(); len(issues) > 0 {
+		return issues
+	}
+
+	// rule #2: check go.mod file only contains 2 require blocks.
+	if issues := rs.checkRule2(); len(issues) > 0 {
+		return issues
+	}
+
+	// rule #3: check the first require block only contains direct dependencies
+	// while the second one only contains indirect ones.
+	return rs.checkRule3()
+}
+
+// checkRule1 asserts require lines and grouped into blocks.
+//
+// Note: if there is just one direct or indirect require directive
+// there is no need to encapsulate it into a require block.
+func (rs *reqStmts) checkRule1() (issues []string) {
 	if len(rs.directLines) > 1 {
 		issues = append(issues, fmt.Sprintf("direct require lines should be grouped into blocks but found %d isolated require directives.", len(rs.directLines)))
 	}
 	if len(rs.indirectLines) > 1 {
 		issues = append(issues, fmt.Sprintf("indirect require lines should be grouped into blocks but found %d isolated require directives.", len(rs.indirectLines)))
 	}
+	return
+}
 
-	if len(issues) > 0 {
-		return issues
-	}
-
-	// rule #2: check go.mod file only contains 2 require blocks.
+// checkRule2 asserts go.mod file only contains 2 require blocks.
+func (rs *reqStmts) checkRule2() (issues []string) {
 	if len(rs.blocks) > 2 {
 		issues = append(issues, fmt.Sprintf("there should be a maximum of 2 require blocks but found %d", len(rs.blocks)))
 	}
+	return
+}
 
+// checkRule3 asserts the first require block only contains direct dependencies
+// while the second one only contains indirect ones.
+func (rs *reqStmts) checkRule3() (issues []string) {
 	// rule #3.1: check the first require block only contains direct dependencies.
 	if len(rs.blocks) > 0 {
 		if rs.blocks[0].consistency != ONLY_DIRECT {
