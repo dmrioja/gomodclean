@@ -153,7 +153,7 @@ func (rs *reqStmts) checkRule3() (issues []string) {
 
 	// rule #3.2: check the second require block only contains indirect dependencies.
 	if len(rs.blocks) > 1 {
-		if rs.blocks[0].consistency != ONLY_INDIRECT {
+		if rs.blocks[1].consistency != ONLY_INDIRECT {
 			issues = append(issues, "second require block should only contain indirect dependencies")
 		}
 	}
