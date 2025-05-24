@@ -6,8 +6,11 @@ import "fmt"
 // require directives encapsulated into lines and blocks.
 type reqStmts struct {
 
-	// lines contains all the isolated "require" directive lines.
-	lines []*reqLine
+	// directLines contains all the isolated direct "require" directive lines.
+	directLines []*reqLine
+
+	// indirectLines contains all the isolated indirect "require" directive lines.
+	indirectLines []*reqLine
 
 	// blocks contains all the "require" directive blocks.
 	blocks []*reqBlock
@@ -17,7 +20,7 @@ type reqStmts struct {
 type reqLine struct {
 
 	// TODO: name and version could be useless. I used them for the first iteration to print
-	// the dependency but I don't think a need them any more.
+	// the dependency but I don't think I need them any more.
 	name     string
 	version  string
 	indirect bool
@@ -44,7 +47,11 @@ const (
 
 // addLine adds a new line to the reqStmts isolated require directive lines.
 func (rs *reqStmts) addLine(line *reqLine) {
-	rs.lines = append(rs.lines, line)
+	if line.indirect {
+		rs.indirectLines = append(rs.indirectLines, line)
+	} else {
+		rs.directLines = append(rs.directLines, line)
+	}
 }
 
 // addBlock adds a whole block of require directive lines to the reqStmts blocks.
@@ -86,12 +93,10 @@ func (rb *reqBlock) updateConsistency(indirect bool) {
 func (rs *reqStmts) analyze() (issues []string) {
 
 	// rule #1: check require lines are grouped into blocks.
-	if len(rs.lines) > 1 {
-		// TODO: there could be 1 direct and 1 indirect line
-		issues = append(issues, fmt.Sprintf("require lines should be grouped into blocks but found %d isolated require directives.", len(rs.lines)))
-	} else if len(rs.lines) == 1 {
-		// TODO: there could be 1 direct line and 1 indirect block or...
-		// there could be 1 indirect line and 1 direct block
+	if len(rs.directLines) > 1 {
+		issues = append(issues, fmt.Sprintf("direct require lines should be grouped into blocks but found %d isolated require directives.", len(rs.directLines)))
+	} else if len(rs.indirectLines) > 1 {
+		issues = append(issues, fmt.Sprintf("indirect require lines should be grouped into blocks but found %d isolated require directives.", len(rs.indirectLines)))
 	}
 
 	// rule #2: check go.mod file only contains 2 require blocks.
