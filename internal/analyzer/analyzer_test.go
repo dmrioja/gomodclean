@@ -9,15 +9,29 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-func TestAnalyze(t *testing.T) {
-	file, err := readGoModFile("../../testdata/rule1/onedirective/go.mod")
-	if err != nil {
-		t.Fatal(err)
-	}
+func TestAnalyzeOneDirective(t *testing.T) {
+	file := retrieveGoModFile("rule1", "onedirective")
 
 	issues := processFile(file).analyze()
 
 	assert.Len(t, issues, 0)
+}
+
+func TestAnalyzeSeveralDirectLines(t *testing.T) {
+	file := retrieveGoModFile("rule1", "severaldirectlines")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 1)
+	assert.Equal(t, issues[0], "direct require lines should be grouped into blocks but found 2 isolated require directives.")
+}
+
+func retrieveGoModFile(rule, testCase string) *modfile.File {
+	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
+	if err != nil {
+		panic(err)
+	}
+	return file
 }
 
 func readGoModFile(filepath string) (*modfile.File, error) {
