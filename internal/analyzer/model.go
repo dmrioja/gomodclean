@@ -95,8 +95,13 @@ func (rs *reqStmts) analyze() (issues []string) {
 	// rule #1: check require lines are grouped into blocks.
 	if len(rs.directLines) > 1 {
 		issues = append(issues, fmt.Sprintf("direct require lines should be grouped into blocks but found %d isolated require directives.", len(rs.directLines)))
-	} else if len(rs.indirectLines) > 1 {
+	}
+	if len(rs.indirectLines) > 1 {
 		issues = append(issues, fmt.Sprintf("indirect require lines should be grouped into blocks but found %d isolated require directives.", len(rs.indirectLines)))
+	}
+
+	if len(issues) > 0 {
+		return issues
 	}
 
 	// rule #2: check go.mod file only contains 2 require blocks.
