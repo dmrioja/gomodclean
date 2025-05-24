@@ -54,8 +54,8 @@ func processFile(file *modfile.File) *reqStmts {
 					// TODO: should we allow empty lines ??
 					if len(line.Token) > 1 {
 						block.addLine(&reqLine{
-							name:     _type.Token[0],
-							version:  _type.Token[1],
+							name:     line.Token[0],
+							version:  line.Token[1],
 							indirect: isIndirect(line.Comment()),
 						})
 					}
