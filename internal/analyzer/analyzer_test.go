@@ -53,6 +53,15 @@ func TestAnalyzeOnlyTwoRequireBlocks(t *testing.T) {
 	assert.Len(t, issues, 0)
 }
 
+func TestAnalyzeMoreThanTwoRequireBlocks(t *testing.T) {
+	file := retrieveGoModFile("rule2", "morethantworequireblocks")
+
+	issues := processFile(file).analyze()
+
+	assert.Len(t, issues, 1)
+	assert.Equal(t, issues[0], "there should be a maximum of 2 require blocks but found 4.")
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {

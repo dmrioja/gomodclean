@@ -121,7 +121,7 @@ func (rs *reqStmts) checkRule1() (issues []string) {
 // checkRule2 asserts go.mod file only contains 2 require blocks.
 func (rs *reqStmts) checkRule2() (issues []string) {
 	if len(rs.blocks) > 2 {
-		issues = append(issues, fmt.Sprintf("there should be a maximum of 2 require blocks but found %d", len(rs.blocks)))
+		issues = append(issues, fmt.Sprintf("there should be a maximum of 2 require blocks but found %d.", len(rs.blocks)))
 	}
 
 	if len(issues) > 0 {
