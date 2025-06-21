@@ -86,8 +86,8 @@ func (rb *reqBlock) updateConsistency(indirect bool) {
 	}
 }
 
-// analyze checks go.mod file satisfies all the rules defined for gomodclean.
-func (rs *reqStmts) analyze() []string {
+// Analyze checks go.mod file satisfies all the rules defined for gomodclean.
+func (rs *reqStmts) Analyze() []string {
 
 	// rule #1: check require lines are grouped into blocks.
 	if issues := rs.checkRule1(); len(issues) > 0 {

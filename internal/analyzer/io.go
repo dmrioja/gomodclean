@@ -10,8 +10,8 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-// getGoModFile reads and retrieves the go.mod file.
-func getGoModFile() (*modfile.File, error) {
+// GetGoModFile reads and retrieves the go.mod file.
+func GetGoModFile() (*modfile.File, error) {
 
 	cmd := exec.Command("go", "env", "GOMOD")
 	gomodenv := &bytes.Buffer{}

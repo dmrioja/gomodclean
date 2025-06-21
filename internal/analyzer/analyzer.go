@@ -1,40 +1,13 @@
 package analyzer
 
 import (
-	"fmt"
-	"log"
 	"strings"
 
 	"golang.org/x/mod/modfile"
 )
 
-func Run() int {
-
-	// retrieve go.mod file
-	file, err := getGoModFile()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// process file (to extract the require statements)
-	reqStmts := processFile(file)
-
-	// analyze require staments
-	issues := reqStmts.analyze()
-
-	// analyze issues
-	if len(issues) != 0 {
-		for _, issue := range issues {
-			fmt.Println(issue)
-		}
-		return 1
-	}
-
-	return 0
-}
-
-// processFile parses the go.mod file into a reqStmts struct.
-func processFile(file *modfile.File) *reqStmts {
+// ProcessFile parses the go.mod file into a reqStmts struct.
+func ProcessFile(file *modfile.File) *reqStmts {
 	reqStmts := &reqStmts{}
 
 	for _, stmt := range file.Syntax.Stmt {

@@ -12,7 +12,7 @@ import (
 func TestAnalyzeOneDirective(t *testing.T) {
 	file := retrieveGoModFile("rule1", "onedirective")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 0)
 }
@@ -20,7 +20,7 @@ func TestAnalyzeOneDirective(t *testing.T) {
 func TestAnalyzeSeveralDirectLines(t *testing.T) {
 	file := retrieveGoModFile("rule1", "severaldirectlines")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 1)
 	assert.Equal(t, issues[0], "direct require lines should be grouped into blocks but found 2 isolated require directives.")
@@ -29,7 +29,7 @@ func TestAnalyzeSeveralDirectLines(t *testing.T) {
 func TestAnalyzeSeveralIndirectLines(t *testing.T) {
 	file := retrieveGoModFile("rule1", "severalindirectlines")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 1)
 	assert.Equal(t, issues[0], "indirect require lines should be grouped into blocks but found 2 isolated require directives.")
@@ -38,7 +38,7 @@ func TestAnalyzeSeveralIndirectLines(t *testing.T) {
 func TestAnalyzeBothDirectAndIndirectLines(t *testing.T) {
 	file := retrieveGoModFile("rule1", "bothdirectandindirectlines")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 2)
 	assert.Equal(t, issues[0], "direct require lines should be grouped into blocks but found 2 isolated require directives.")
@@ -48,7 +48,7 @@ func TestAnalyzeBothDirectAndIndirectLines(t *testing.T) {
 func TestAnalyzeOnlyTwoRequireBlocks(t *testing.T) {
 	file := retrieveGoModFile("rule2", "onlytworequireblocks")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 0)
 }
@@ -56,7 +56,7 @@ func TestAnalyzeOnlyTwoRequireBlocks(t *testing.T) {
 func TestAnalyzeMoreThanTwoRequireBlocks(t *testing.T) {
 	file := retrieveGoModFile("rule2", "morethantworequireblocks")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 1)
 	assert.Equal(t, issues[0], "there should be a maximum of 2 require blocks but found 4.")
@@ -65,7 +65,7 @@ func TestAnalyzeMoreThanTwoRequireBlocks(t *testing.T) {
 func TestAnalyzeIsolatedDirectLineShouldBeInsideBlock(t *testing.T) {
 	file := retrieveGoModFile("rule2", "isolateddirectlineshouldbeinsideblock")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 1)
 	assert.Equal(t, issues[0], "require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.")
@@ -74,7 +74,7 @@ func TestAnalyzeIsolatedDirectLineShouldBeInsideBlock(t *testing.T) {
 func TestAnalyzeIsolatedIndirectLineShouldBeInsideBlock(t *testing.T) {
 	file := retrieveGoModFile("rule2", "isolatedindirectlineshouldbeinsideblock")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 1)
 	assert.Equal(t, issues[0], "require directive \"github.com/dmrioja/shodo v1.0.0\" should be inside block.")
@@ -83,7 +83,7 @@ func TestAnalyzeIsolatedIndirectLineShouldBeInsideBlock(t *testing.T) {
 func TestAnalyzeIsolatedLinesShouldBeInsideBlock(t *testing.T) {
 	file := retrieveGoModFile("rule2", "isolatedlinesshouldbeinsideblock")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 2)
 	assert.Equal(t, issues[0], "require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.")
@@ -93,7 +93,7 @@ func TestAnalyzeIsolatedLinesShouldBeInsideBlock(t *testing.T) {
 func TestAnalyzeTwoCorrectBlocks(t *testing.T) {
 	file := retrieveGoModFile("rule3", "twocorrectblocks")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 0)
 }
@@ -101,7 +101,7 @@ func TestAnalyzeTwoCorrectBlocks(t *testing.T) {
 func TestAnalyzeUnorderedBlocks(t *testing.T) {
 	file := retrieveGoModFile("rule3", "unorderedblocks")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 2)
 	assert.Equal(t, issues[0], "first require block should only contain direct dependencies.")
@@ -111,7 +111,7 @@ func TestAnalyzeUnorderedBlocks(t *testing.T) {
 func TestAnalyzeMixedBlock(t *testing.T) {
 	file := retrieveGoModFile("rule3", "mixedblock")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 2)
 	assert.Equal(t, issues[0], "first require block should only contain direct dependencies.")
@@ -121,7 +121,7 @@ func TestAnalyzeMixedBlock(t *testing.T) {
 func TestAnalyzeOnlyOneIndirectBlock(t *testing.T) {
 	file := retrieveGoModFile("rule3", "onlyoneindirectblock")
 
-	issues := processFile(file).analyze()
+	issues := ProcessFile(file).Analyze()
 
 	assert.Len(t, issues, 0)
 }
