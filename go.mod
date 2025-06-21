@@ -1,4 +1,4 @@
-module gomodclean
+module github.com/dmrioja/gomodclean
 
 go 1.24.2
 

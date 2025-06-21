@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"gomodclean/internal/analyzer"
+	"github.com/dmrioja/gomodclean/internal/analyzer"
 )
 
 func main() {
