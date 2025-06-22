@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"             
+    schedule:
+      interval: "weekly"
+      day: "monday"                   
+    open-pull-requests-limit: 10
+    target-branch: "main"   
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+    allow:
+      - dependency-type: "direct"
+    assignees:
+      - "dmrioja"
