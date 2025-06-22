@@ -73,7 +73,7 @@ func isRequire(tokens []string) bool {
 func isIndirect(comment *modfile.Comments) bool {
 	if comment != nil {
 		for _, suffix := range comment.Suffix {
-			if strings.Contains(suffix.Token, "indirect") {
+			if strings.HasPrefix(suffix.Token, "// indirect") {
 				return true
 			}
 		}

@@ -152,6 +152,16 @@ func TestAnalyzeOnlyOneIndirectBlock(t *testing.T) {
 	assert.Empty(t, issues)
 }
 
+func TestAnalyzeIndirectComment(t *testing.T) {
+	t.Parallel()
+
+	file := retrieveGoModFile("rule3", "indirectcomment")
+
+	issues := processFile(file).analyze()
+
+	assert.Empty(t, issues)
+}
+
 func retrieveGoModFile(rule, testCase string) *modfile.File {
 	file, err := readGoModFile(fmt.Sprintf("../../testdata/%s/%s/go.mod", rule, testCase))
 	if err != nil {
