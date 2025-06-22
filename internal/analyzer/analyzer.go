@@ -1,19 +1,18 @@
 package analyzer
 
 import (
-	"fmt"
-	"log"
 	"strings"
 
 	"golang.org/x/mod/modfile"
+	"golang.org/x/tools/go/analysis"
 )
 
-func Run() int {
-
+// AnalyzePass analyzes a pass.
+func AnalyzePass(pass *analysis.Pass) ([]string, error) {
 	// retrieve go.mod file
 	file, err := getGoModFile()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// process file (to extract the require statements)
@@ -22,15 +21,7 @@ func Run() int {
 	// analyze require staments
 	issues := reqStmts.analyze()
 
-	// analyze issues
-	if len(issues) != 0 {
-		for _, issue := range issues {
-			fmt.Println(issue)
-		}
-		return 1
-	}
-
-	return 0
+	return issues, nil
 }
 
 // processFile parses the go.mod file into a reqStmts struct.
@@ -50,6 +41,7 @@ func processFile(file *modfile.File) *reqStmts {
 		case *modfile.LineBlock:
 			if isRequire(_type.Token) {
 				block := &reqBlock{}
+
 				for _, line := range _type.Line {
 					// TODO: should we allow empty lines ??
 					if len(line.Token) > 1 {
@@ -60,10 +52,12 @@ func processFile(file *modfile.File) *reqStmts {
 						})
 					}
 				}
+
 				reqStmts.addBlock(block)
 			}
 		default:
 			// just do nothing
+			continue
 		}
 	}
 
@@ -84,5 +78,6 @@ func isIndirect(comment *modfile.Comments) bool {
 			}
 		}
 	}
+
 	return false
 }

@@ -10,9 +10,13 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
+var (
+	// ErrGoModNotFound is an error returned when the go.mod file is not found.
+	ErrGoModNotFound = errors.New("could not find go.mod env (outside a go module?)")
+)
+
 // getGoModFile reads and retrieves the go.mod file.
 func getGoModFile() (*modfile.File, error) {
-
 	cmd := exec.Command("go", "env", "GOMOD")
 	gomodenv := &bytes.Buffer{}
 	cmd.Stdout = gomodenv
@@ -22,7 +26,7 @@ func getGoModFile() (*modfile.File, error) {
 	}
 
 	if gomodenv.String() == "/dev/null" {
-		return nil, errors.New("could not find go.mod env (outside a go module?)")
+		return nil, ErrGoModNotFound
 	}
 
 	content, err := os.ReadFile("go.mod")

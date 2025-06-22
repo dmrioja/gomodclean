@@ -1,0 +1,33 @@
+version: "2"
+
+linters:
+  default: all
+  disable:
+    - bodyclose # no HTTP in this project
+    - canonicalheader # no HTTP in this project
+    - cyclop # duplicated by gocyclo
+    - exhaustruct # noisy
+    - ginkgolinter # no ginkgo or gomega in this project
+    - noctx # no HTTP in this project
+    - noinlineerr # noisy and not documented in golangci-lint ???
+    - promlinter # no Prometheus metrics in this project
+    - rowserrcheck # no SQL in this project
+    - spancheck # no OpenTelemetry/Census in this project
+    - sqlclosecheck # no SQL in this project
+
+  # TODO: check for the future
+    - depguard
+    - exhaustive
+    - godox
+    - gosec
+    - lll # I may refactor tests
+    - revive
+    - testpackage # I may disabled this linter
+  
+# formatters:
+#   enable:
+#     - gci
+#     - gofumpt
+#   settings:
+#     gofumpt:
+#       extra-rules: true
