@@ -1,4 +1,4 @@
-package analyzer
+package io
 
 import (
 	"bytes"
@@ -15,8 +15,8 @@ var (
 	ErrGoModNotFound = errors.New("could not find go.mod env (outside a go module?)")
 )
 
-// getGoModFile reads and retrieves the go.mod file.
-func getGoModFile() (*modfile.File, error) {
+// GetGoModFile reads and retrieves the go.mod file.
+func GetGoModFile() (*modfile.File, error) {
 	cmd := exec.Command("go", "env", "GOMOD")
 	gomodenv := &bytes.Buffer{}
 	cmd.Stdout = gomodenv
