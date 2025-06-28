@@ -4,14 +4,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/dmrioja/gomodclean/internal/analyzer"
-	"golang.org/x/tools/go/analysis"
+	"github.com/dmrioja/gomodclean/pkg/analyzer"
 )
 
 func main() {
-	var pass *analysis.Pass
-
-	issues, err := analyzer.AnalyzePass(pass)
+	issues, err := analyzer.Analyze()
 
 	if err != nil {
 		log.Fatal(err)
