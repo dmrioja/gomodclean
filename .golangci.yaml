@@ -20,7 +20,7 @@ linters:
     - exhaustive
     - godox
     - gosec
-    - lll # I may refactor tests
+    - lll # I may refactor the error messages
     - revive
     - testpackage # I may disabled this linter
   

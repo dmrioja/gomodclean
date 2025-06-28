@@ -9,157 +9,97 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-func TestAnalyzeOneDirective(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule1", "onedirective")
-
-	issues := processFile(file).analyze()
-
-	assert.Empty(t, issues)
+// testCase represent a case inside a rule test.
+type testCase struct {
+	name           string
+	expectedIssues []string
 }
 
-func TestAnalyzeSeveralDirectLines(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule1", "severaldirectlines")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 1)
-	assert.Equal(t, "direct require lines should be grouped into blocks but found 2 isolated require directives.", issues[0])
+//nolint:gochecknoglobals
+var scenarios = []struct {
+	rule      string
+	testCases []testCase
+}{
+	{
+		rule: "rule1",
+		testCases: []testCase{
+			{name: "onedirective", expectedIssues: nil},
+			{name: "severaldirectlines", expectedIssues: []string{
+				"direct require lines should be grouped into blocks but found 2 isolated require directives.",
+			}},
+			{name: "severalindirectlines", expectedIssues: []string{
+				"indirect require lines should be grouped into blocks but found 2 isolated require directives.",
+			}},
+			{name: "bothdirectandindirectlines", expectedIssues: []string{
+				"direct require lines should be grouped into blocks but found 2 isolated require directives.",
+				"indirect require lines should be grouped into blocks but found 2 isolated require directives.",
+			}},
+		},
+	},
+	{
+		rule: "rule2",
+		testCases: []testCase{
+			{name: "onlytworequireblocks", expectedIssues: nil},
+			{name: "morethantworequireblocks", expectedIssues: []string{
+				"there should be a maximum of 2 require blocks but found 4.",
+			}},
+			{name: "isolateddirectlineshouldbeinsideblock", expectedIssues: []string{
+				"require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.",
+			}},
+			{name: "isolatedindirectlineshouldbeinsideblock", expectedIssues: []string{
+				"require directive \"github.com/dmrioja/shodo v1.0.0\" should be inside block.",
+			}},
+			{name: "isolatedlinesshouldbeinsideblock", expectedIssues: []string{
+				"require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.",
+				"require directive \"github.com/cosa/cosita/v5 v5.3.3\" should be inside block.",
+			}},
+		},
+	},
+	{
+		rule: "rule3",
+		testCases: []testCase{
+			{name: "twocorrectblocks", expectedIssues: nil},
+			{name: "unorderedblocks", expectedIssues: []string{
+				"first require block should only contain direct dependencies.",
+				"second require block should only contain indirect dependencies.",
+			}},
+			{name: "mixedblock", expectedIssues: []string{
+				"first require block should only contain direct dependencies.",
+				"second require block should only contain indirect dependencies.",
+			}},
+			{name: "onlyoneindirectblock", expectedIssues: nil},
+			{name: "indirectcomment", expectedIssues: nil},
+		},
+	},
 }
 
-func TestAnalyzeSeveralIndirectLines(t *testing.T) {
+func TestAnalyzeScenarios(t *testing.T) {
 	t.Parallel()
 
-	file := retrieveGoModFile("rule1", "severalindirectlines")
+	for _, scenario := range scenarios {
+		t.Run(scenario.rule, func(t *testing.T) {
+			t.Parallel()
 
-	issues := processFile(file).analyze()
+			for _, testCase := range scenario.testCases {
+				t.Run(testCase.name, func(t *testing.T) {
+					t.Parallel()
 
-	assert.Len(t, issues, 1)
-	assert.Equal(t, "indirect require lines should be grouped into blocks but found 2 isolated require directives.", issues[0])
-}
+					file := retrieveGoModFile(scenario.rule, testCase.name)
+					issues := processFile(file).analyze()
 
-func TestAnalyzeBothDirectAndIndirectLines(t *testing.T) {
-	t.Parallel()
+					if testCase.expectedIssues == nil {
+						assert.Empty(t, issues)
+					} else {
+						assert.Len(t, issues, len(testCase.expectedIssues))
 
-	file := retrieveGoModFile("rule1", "bothdirectandindirectlines")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 2)
-	assert.Equal(t, "direct require lines should be grouped into blocks but found 2 isolated require directives.", issues[0])
-	assert.Equal(t, "indirect require lines should be grouped into blocks but found 2 isolated require directives.", issues[1])
-}
-
-func TestAnalyzeOnlyTwoRequireBlocks(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule2", "onlytworequireblocks")
-
-	issues := processFile(file).analyze()
-
-	assert.Empty(t, issues)
-}
-
-func TestAnalyzeMoreThanTwoRequireBlocks(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule2", "morethantworequireblocks")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 1)
-	assert.Equal(t, "there should be a maximum of 2 require blocks but found 4.", issues[0])
-}
-
-func TestAnalyzeIsolatedDirectLineShouldBeInsideBlock(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule2", "isolateddirectlineshouldbeinsideblock")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 1)
-	assert.Equal(t, "require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.", issues[0])
-}
-
-func TestAnalyzeIsolatedIndirectLineShouldBeInsideBlock(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule2", "isolatedindirectlineshouldbeinsideblock")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 1)
-	assert.Equal(t, "require directive \"github.com/dmrioja/shodo v1.0.0\" should be inside block.", issues[0])
-}
-
-func TestAnalyzeIsolatedLinesShouldBeInsideBlock(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule2", "isolatedlinesshouldbeinsideblock")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 2)
-	assert.Equal(t, "require directive \"github.com/bar/bar/v2 v2.0.0\" should be inside block.", issues[0])
-	assert.Equal(t, "require directive \"github.com/cosa/cosita/v5 v5.3.3\" should be inside block.", issues[1])
-}
-
-func TestAnalyzeTwoCorrectBlocks(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule3", "twocorrectblocks")
-
-	issues := processFile(file).analyze()
-
-	assert.Empty(t, issues)
-}
-
-func TestAnalyzeUnorderedBlocks(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule3", "unorderedblocks")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 2)
-	assert.Equal(t, "first require block should only contain direct dependencies.", issues[0])
-	assert.Equal(t, "second require block should only contain indirect dependencies.", issues[1])
-}
-
-func TestAnalyzeMixedBlock(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule3", "mixedblock")
-
-	issues := processFile(file).analyze()
-
-	assert.Len(t, issues, 2)
-	assert.Equal(t, "first require block should only contain direct dependencies.", issues[0])
-	assert.Equal(t, "second require block should only contain indirect dependencies.", issues[1])
-}
-
-func TestAnalyzeOnlyOneIndirectBlock(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule3", "onlyoneindirectblock")
-
-	issues := processFile(file).analyze()
-
-	assert.Empty(t, issues)
-}
-
-func TestAnalyzeIndirectComment(t *testing.T) {
-	t.Parallel()
-
-	file := retrieveGoModFile("rule3", "indirectcomment")
-
-	issues := processFile(file).analyze()
-
-	assert.Empty(t, issues)
+						for i, expectedIssue := range testCase.expectedIssues {
+							assert.Equal(t, expectedIssue, issues[i])
+						}
+					}
+				})
+			}
+		})
+	}
 }
 
 func retrieveGoModFile(rule, testCase string) *modfile.File {
