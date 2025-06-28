@@ -1,6 +1,6 @@
 module github.com/dmrioja/gomodclean
 
-go 1.24.2
+go 1.23.0
 
 require (
 	github.com/stretchr/testify v1.10.0
