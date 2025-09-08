@@ -1,10 +1,10 @@
 module github.com/dmrioja/gomodclean
 
-go 1.23.0
+go 1.24.0
 
 require (
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/mod v0.25.0
+	golang.org/x/mod v0.28.0
 )
 
 require (
