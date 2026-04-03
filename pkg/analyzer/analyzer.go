@@ -25,7 +25,6 @@ func Analyze() ([]Issue, error) {
 
 	issues := processor.ProcessFile(file)
 
-	//nolint:prealloc
 	var result []Issue
 	for _, issue := range issues {
 		result = append(result, Issue{

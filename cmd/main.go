@@ -9,7 +9,6 @@ import (
 
 func main() {
 	issues, err := analyzer.Analyze()
-
 	if err != nil {
 		log.Fatal(err)
 	}
